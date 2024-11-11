@@ -1,0 +1,54 @@
+EECS 348 Project Meeting Log - Group 3, Fall 2024
+
+Group members: Peter Barybin, Addison Bartelli, Hart Nurnberg, Emily Farley, Arpa Das
+
+
+Team Meeting 9/20
+WHEN: 5pm @ M2SEC
+PURPOSE: All team members added member profiles, Arpa added team roles, Peter added communication plan, team created weekly meeting details/log section. 
+ATTENDANCE: (All members) Peter, Addison, Hart, Emily, Arpa
+
+Team Meeting 9/25
+WHEN: 5pm @ M2SEC
+PURPOSE: All team members discussed the Project Plan and were assigned sections.
+    Peter - 2.2 and risk management (4.7 and part of 4.3)
+    Addison - 3.1-3.3 and 4.2
+    Hart - 2.3-2.4 and quality control (4.5 and part of 4.3)
+    Emily - 1.3-1.5 and requirements management (part of 4.3)
+    Arpa - 1.1-1.2, 2.1, and configuration management (4.8 and part of 4.3)
+ATTENDANCE: (All members) Peter, Addison, Hart, Emily, Arpa
+
+Team Meeting 9/29
+WHEN: Asynchronous via Discord
+PURPOSE: Completed Project Plan document. 
+ATTENDANCE: (All members) Peter, Addison, Hart, Emily, Arpa
+
+Team Meeting 10/08
+WHEN: 5pm @ M2SEC
+PURPOSE: Discussed Software Requirements Specifications document and assigned sections to team members.
+    Peter - 3.1, 3.2, cleanup
+    Addison - 2.1.6, 2.5, 4
+    Hart - 2.1.2, 2.1.4, 3.3
+    Emily - 2.2-2.4
+    Arpa - 1.1-1.5, 5
+ATTENDANCE: (All members) Peter, Addison, Hart, Emily, Arpa
+
+Team Meeting 10/20
+WHEN: Asynchronous via Discord
+PURPOSE: Completed Software Requirements Specifications document and worked through issue with word document formatting. 
+ATTENDANCE: (All members) Peter, Addison, Hart, Emily, Arpa
+
+Team Meeting 11/06
+WHEN: 7pm @ LEEP
+PURPOSE: Discussed Software Architecture Design doc and selected software architecture to be used for the project. More project brainstorming for implementation was conducted and sections of the Software Architecture Design document were assigned and analyzed.
+    Peter - 2, 3, cleanup
+    Addison - 6, 8
+    Hart - 2, 3
+    Emily - 5
+    Arpa - 1.1-1.5, 9
+ATTENDANCE: (All members) Peter, Addison, Hart, Emily, Arpa
+
+Team Meeting 11/10
+WHEN: Asynchronous via Discord
+PURPOSE: Finished Software Architecture Design document and worked through questions on design and sections of the document.
+ATTENDANCE: (All members) Peter, Addison, Hart, Emily, Arpa
