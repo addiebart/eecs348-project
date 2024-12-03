@@ -42,7 +42,7 @@ string parse(const string& input) {
         subExp = parse(subExp);
         string leftStr = instr.substr(0, leftParaI);
         string rightStr = instr.substr(rightParaI + 1);
-        string finalStr = leftStr + rightStr
+        string finalStr = leftStr + subExp + rightStr;
     }
 }
 
