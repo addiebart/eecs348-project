@@ -1,10 +1,28 @@
 #include <iostream>
 #include <string>
+#include <cmath>
 
 using namespace std;
 
-// takes a lexar-passed string, no errors
-string parse(const string& input) {
+bool isNumeric(const char& c) {
+    switch (c) {
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+            return true;
+    }
+    return false;
+}
+
+// takes a lexar-passed string, no errors, and has been marked with paras
+int eval(const string& input) {
 
     string instr = input;
 
@@ -24,7 +42,41 @@ string parse(const string& input) {
     } 
 
     if (rightParaI < 0) {
-        // apply pemdas and place back into str
+        //eval expression with two operands
+        int operandI;
+        for (int i = 0; i < instr.length(); i++) {
+            if (!isNumeric(instr[i])) {
+                operandI = i;
+            }
+        }
+        char operand = instr[operandI];
+        int leftNum = stoi(instr.substr(0, operandI));
+        int rightNum = stoi(instr.substr(operandI + 1));
+        int result;
+        switch (operand) {
+            case '^':
+                result = pow(leftNum, rightNum);
+                break;
+            case '*':
+                result = leftNum * rightNum;
+                break;
+            case '/':
+                result = leftNum / rightNum;
+                break;
+            case '%':
+                result = leftNum % rightNum;
+                break;
+            case '+':
+                result = leftNum + rightNum;
+                break;
+            case '-':
+                result = leftNum - rightNum;
+                break;
+            default:
+                cout << "illegal operator" << endl;
+        }
+
+        return result;
     }
 
     else {
@@ -39,13 +91,14 @@ string parse(const string& input) {
         }
 
         string subExp = instr.substr(leftParaI + 1, rightParaI - leftParaI - 1); // get substr inside paras
-        subExp = parse(subExp);
+        subExp = eval(subExp);
         string leftStr = instr.substr(0, leftParaI);
         string rightStr = instr.substr(rightParaI + 1);
         string finalStr = leftStr + subExp + rightStr;
+        return eval(finalStr);
     }
 }
 
 int main() {
-
+    // prompt user and stuff
 }
