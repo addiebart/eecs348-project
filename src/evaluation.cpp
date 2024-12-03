@@ -11,8 +11,7 @@ string parse(const string& input) {
     // remove spaces
     for (int i = 0; i < instr.length(); i++) {
         if (instr[i] == ' ') {
-            instr.erase(i, 1); // remove space
-            i--;
+            instr.erase(i--, 1); // remove space
         }
     }
 
@@ -25,7 +24,7 @@ string parse(const string& input) {
     } 
 
     if (rightParaI < 0) {
-        // no preexisting paras remain
+        // apply pemdas and place back into str
     }
 
     else {
@@ -41,6 +40,9 @@ string parse(const string& input) {
 
         string subExp = instr.substr(leftParaI + 1, rightParaI - leftParaI - 1); // get substr inside paras
         subExp = parse(subExp);
+        string leftStr = instr.substr(0, leftParaI);
+        string rightStr = instr.substr(rightParaI + 1);
+        string finalStr = leftStr + rightStr
     }
 }
 
