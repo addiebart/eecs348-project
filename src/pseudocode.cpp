@@ -1,19 +1,19 @@
 /*
 
-Lexar - check for syntax errors
-
-Parser - Add parenthesis according to pemdas
-    1. looks existing ().
-    2. run parser in parenthesis recursively
-    3. apply parser to ops out of () by pemdas
+Lexar - Clean string:
+- Remove white space
+- Convert ** to ^
+- change 3(4) to 3*(4)
+- Check for valid string
+- only numbers paras and operators
+- paras nest and close properly
+- no double operators
+- no unary operators execpt negation
+- change -(x) to -1*(x)
 
 Evaluator - Evaluate parsed operations
-    1. find first right parenthesis
-    2. find the corresponding left parenthesis
-    3. take note of string index of '('
-    3. observer the operator character
-    4. use switch statement on said character to find operation
-    5. preform the operation
-    6. store the character at the old index, thereby replacing the microexpression with its simplification
-    7. repeat from 1 on the new string assuming there are no more operators
+- Find parentheses if they exist
+- Recurse on anything in parentheses, simplifying them
+- Apply pemdas to recurse on a single operation with one operator
+- Handle expressions with 0 or 1 operators in base cases
 */
