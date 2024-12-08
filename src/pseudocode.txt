@@ -1,5 +1,3 @@
-/*
-
 Lexar - Clean string:
 - Remove white space
 - Convert ** to ^
@@ -16,4 +14,3 @@ Evaluator - Evaluate parsed operations
 - Recurse on anything in parentheses, simplifying them
 - Apply pemdas to recurse on a single operation with one operator
 - Handle expressions with 0 or 1 operators in base cases
-*/
