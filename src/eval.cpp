@@ -30,7 +30,7 @@ inline bool isNumeric(char c) {
 }
 
 // performs an operation on two ints stored as strings. returns a string.
-string binaryOperation(const string& left, char op, const string& right) {
+string binaryEval(const string& left, char op, const string& right) {
     int l = stoi(left);
     int r = stoi(right);
     int result;
@@ -100,7 +100,7 @@ int fillWithOpsInStr(const string& str, int arr[]) {
     return count;
 }
 
-string eval(const string& str); // prototype to be used by multipleOpsBlock
+string parseAndEval(const string& str); // prototype to be used by multipleOpsBlock
 
 string multipleOpsBlock(int ops[], int opCount, int priority, const string& str) {
     // cycle indices of operators in ops[]
@@ -132,7 +132,7 @@ string multipleOpsBlock(int ops[], int opCount, int priority, const string& str)
             string r = str.substr(opI + 1, ssEnd - opI); 
 
             // execute operation
-            string result = binaryOperation(l, str[opI], r);
+            string result = binaryEval(l, str[opI], r);
             string lwhole = str.substr(0, ssStart);
             string rwhole = str.substr(ssEnd + 1, str.length() - ssEnd - 1);
             string newexp = lwhole + result + rwhole;
@@ -142,7 +142,7 @@ string multipleOpsBlock(int ops[], int opCount, int priority, const string& str)
             ops = nullptr;
 
             //recurse
-            return eval(newexp);
+            return parseAndEval(newexp);
         }
 
     }
@@ -150,7 +150,7 @@ string multipleOpsBlock(int ops[], int opCount, int priority, const string& str)
     return "no";
 }
 
-string eval(const string& str) { 
+string parseAndEval(const string& str) { 
 
     // find the index of the first ')'
     int rightParaI = -1;
@@ -190,7 +190,7 @@ string eval(const string& str) {
             ops = nullptr;
 
             // solve and return
-            return binaryOperation(l, str[opI], r);
+            return binaryEval(l, str[opI], r);
         }
 
         // multiple operators, recursive step
@@ -235,17 +235,17 @@ string eval(const string& str) {
         string subExp = str.substr(leftParaI + 1, rightParaI - leftParaI - 1);
 
         // recurse on substring
-        subExp = eval(subExp);
+        subExp = parseAndEval(subExp);
 
         // get parts of instr to the left and right of ()
         string leftStr = str.substr(0, leftParaI);
         string rightStr = str.substr(rightParaI + 1);
 
-        // mash strings together to make a new "instr"
+        // mash strings together to make a new "str"
         string finalStr = leftStr + subExp + rightStr;
         
         // recurse on it
-        return eval(finalStr);
+        return parseAndEval(finalStr);
     }
 
     // The program shouldn't reach here if input is good from lexar
@@ -254,7 +254,7 @@ string eval(const string& str) {
 
 void test(const string& str, int expected) {
     cout << "Testing \"" + str + "\" = " + to_string(expected) + ": ";
-    int actual = stoi(eval(str));
+    int actual = stoi(parseAndEval(str));
     if (actual == expected) {
         cout << "Passed!" << endl;
     } else {
@@ -280,7 +280,7 @@ void testCases() {
     // div by 0
     try {
         cout << "Testing divide by zero: ";
-        eval("10/(6%2)");
+        parseAndEval("10/(6%2)");
         cout << "Failed!" << endl;
     } catch (const exception& e) {
         cout << "Passed!" << endl;
@@ -288,12 +288,11 @@ void testCases() {
     // mod by 0
     try {
         cout << "Testing mod by zero: ";
-        eval("10%(6-2*3)");
+        parseAndEval("10%(6-2*3)");
         cout << "Failed!" << endl;
     } catch (const exception& e) {
         cout << "Passed!" << endl;
     }
-
 }
 
 int main() {
@@ -313,7 +312,7 @@ int main() {
         // find result and handle errors
         string result;
         try {
-            result = eval(line);
+            result = parseAndEval(line);
             if (result == "Error") {
                 cout << "Unknown Error" << endl;
             } else {
