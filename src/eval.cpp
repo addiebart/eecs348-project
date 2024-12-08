@@ -31,9 +31,9 @@ inline bool isNumeric(char c) {
 
 // performs an operation on two ints stored as strings. returns a string.
 string binaryEval(const string& left, char op, const string& right) {
-    int l = stoi(left);
-    int r = stoi(right);
-    int result;
+    long l = stol(left);
+    long r = stol(right);
+    long result;
     switch (op) {
         case '^':
             result = pow(l, r);
@@ -226,9 +226,9 @@ string parseAndEval(const string& str) {
     return "Error";
 }
 
-inline void test(const string& str, int expected) {
+inline void test(const string& str, long expected) {
     cout << "Testing \"" + str + "\" = " + to_string(expected) + ": ";
-    int actual = stoi(parseAndEval(str));
+    long actual = stol(parseAndEval(str));
     cout << ((actual == expected) ? "Passed!" : "Failed!") << endl;
 }
 
@@ -268,9 +268,14 @@ void testCases() {
 int main() {
     while (true) {
         // prompt and read input
-        cout << "Provide an expression to simplify, or enter 't' to run test cases:" << endl;
+        cout << "Provide an expression to simplify, enter 't' to run test cases, or 'q' to quit:" << endl;
         string line;
         getline(cin, line);
+
+        // check for quit signal
+        if (line == "q") {
+            return 0;
+        }
 
         // check for and start test cases
         if (line == "t") {
