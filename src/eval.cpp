@@ -7,11 +7,12 @@ eval.cpp
 
 #include <iostream>
 #include <string>
-#include <cmath>
+#include <cmath> // for pow() only
 #include <stdexcept>
 
 using namespace std;
 
+// takes a char, returns true if a number 0-9
 inline bool isNumeric(char c) {
     switch (c) {
         case '0':
@@ -30,7 +31,7 @@ inline bool isNumeric(char c) {
 }
 
 // performs an operation on two ints stored as strings. returns a string.
-string binaryEval(const string& left, char op, const string& right) {
+string binaryEval(const string &left, char op, const string &right) {
     long l = stol(left);
     long r = stol(right);
     long result;
@@ -70,12 +71,12 @@ string binaryEval(const string& left, char op, const string& right) {
 // returns a bool for if a '-' with index i in str is for negation or subtraction based on the character to its left
 // true: negation
 // false: subtraction
-inline bool minusIsNegation(const string& str, int i) {
+inline bool minusIsNegation(const string &str, int i) {
     return !(isNumeric(str[i-1]) || str[i-1] == ')');
 }
 
 // fills arr with indicies of operators in str
-int fillWithOpsInStr(const string& str, int arr[]) {
+int fillWithOpsInStr(const string &str, int arr[]) {
     int j = 0; // for array slots
     int count = 0; // count ops to be able to return arr length to caller
     for (int i = 0; i < str.length(); i++) {
@@ -101,7 +102,7 @@ int fillWithOpsInStr(const string& str, int arr[]) {
     return count;
 }
 
-string parseAndEval(const string& str) { 
+string parseAndEval(const string &str) { 
     // find the index of the first ')'
     int rightParaI = -1;
     for (int i = 0; i < str.length(); i++) {
@@ -113,6 +114,7 @@ string parseAndEval(const string& str) {
 
     // if no () exists
     if (rightParaI < 0) {
+        // dynamically allocate array and fill with indicies of operators in str
         int *ops = new int[str.size() + 1];
         int opCount = fillWithOpsInStr(str, ops);
 
@@ -242,7 +244,7 @@ void testCases() {
     test("6%4/2", 1);
     test("6%(4/2)", 0);
     test("((3+5)/2)+(3*5+2)", 21);
-    test("4^-2", 0); // 1/16 = 0 by int divison
+    test("4^-2", 0); // = 1/16 = 0 by int divison
     test("-7*(30/1+17%3)-3^2", (-7*((30/1)+(17%3)))-pow(3,2));
     test("-7*(30/1+17%3)-3^-2", (-7*((30/1)+(17%3)))-pow(3,-2));
 
@@ -292,10 +294,10 @@ int main() {
             } else {
                 cout << result << endl;
             }
-        } catch (const exception& e) {
+        } catch (const exception &e) {
             cout << "Error: " << e.what() << endl;
         }
-        cout << endl;
+        cout << endl;       
     }
     return 0;
 }
