@@ -65,7 +65,11 @@ string binaryEval(const string &left, char op, const string &right) {
         default:
             cout << "invalid op in binaryOperation" << endl;
     }
-    return to_string(result);
+    string resultstr = to_string(result);
+    if (resultstr == "-9223372036854775808") {
+        throw runtime_error("Long int overflow/underflow!");
+    }
+    return resultstr;
 }
 
 // returns a bool for if a '-' with index i in str is for negation or subtraction based on the character to its left
@@ -102,6 +106,7 @@ int fillWithOpsInStr(const string &str, int arr[]) {
     return count;
 }
 
+// takes a string from the lexar and simplifies it. returns a single integer as a string.
 string parseAndEval(const string &str) { 
     // find the index of the first ')'
     int rightParaI = -1;
@@ -261,6 +266,22 @@ void testCases() {
     try {
         cout << "Testing mod by zero: ";
         parseAndEval("10%(6-2*3)");
+        cout << "Failed!" << endl;
+    } catch (const exception& e) {
+        cout << "Passed!" << endl;
+    }
+    // overflow
+    try {
+        cout << "Overflow: ";
+        parseAndEval("200^75");
+        cout << "Failed!" << endl;
+    } catch (const exception& e) {
+        cout << "Passed!" << endl;
+    }
+    // underflow
+    try {
+        cout << "Underflow: ";
+        parseAndEval("-200^75");
         cout << "Failed!" << endl;
     } catch (const exception& e) {
         cout << "Passed!" << endl;
