@@ -43,7 +43,7 @@ string lexer(const string &input) {
     string str = input;
 
     // check for only valid characters
-    regex validChars("([0-9+\\-*/%()]+)");
+    regex validChars("([0-9+\\-*/%() ]+)");
     if (!regex_match(str, validChars)) {
         throw runtime_error("Invalid character in input.");
     }
