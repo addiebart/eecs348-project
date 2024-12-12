@@ -107,11 +107,11 @@ string lexer(const string &input) {
         if ((c == '+' || c == '-' || c == '*' || c == '/' || c == '^')) {
             // input is invalid if non unary operator at beginning
             if (i == 0 && c != '-' && c != '+') {
-                throw runtime_error("Invalid operator usage. Index=" + to_string(i));
+                throw runtime_error("Invalid operator usage.");
             }
             // input is invalid if any operator at end
             if (i == str.length() - 1) {
-                throw runtime_error("Invalid operator usage. Index=" + to_string(i));
+                throw runtime_error("Invalid operator usage.");
             }
             // account for unary operator execptions
             if ((c == '-' || c == '+') && minusIsNegation(str, i)) {
@@ -121,7 +121,7 @@ string lexer(const string &input) {
             bool leftCharCompliant = isNumeric(str[i - 1]) || str[i - 1] == ')'; // conditions for left to be valid
             bool rightCharCompliant = isNumeric(str[i + 1]) || str[i + 1] == '(' || ((str[i + 1] == '+' || str[i + 1] == '-') && minusIsNegation(str, i + 1)); // conditions for right to be valid
             if (!(leftCharCompliant && rightCharCompliant)) {
-                throw runtime_error("Invalid operator usage. Index=" + to_string(i));
+                throw runtime_error("Invalid operator usage.");
             }
         }
     }
