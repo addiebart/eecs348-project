@@ -10,7 +10,6 @@ calculator.cpp
 #include <cmath> // for pow() only
 #include <stdexcept>
 #include <regex>
-#include <stack>
 
 using namespace std;
 
@@ -80,18 +79,18 @@ string lexer(const string &input) {
     }
 
     // check for matching parentheses
-    stack <char> paraStack; // use a stack to check paraenthetical matching, stores left paras only
+    int paraTracker = 0; // use a counter to check paraenthetical matching, stores left paras only
     for (int i = 0; i < str.length(); i++) {
         if (str[i] == '(') { 
-            paraStack.push('(');
+            paraTracker++;
         } else if (str[i] == ')') { // if recived right, remove a left
-            if (paraStack.empty()) { // if you cant remove a corresponding left, there is an imbalance
+            if (paraTracker <= 0) { // if you cant remove a corresponding left, there is an imbalance
                 throw runtime_error("Unmatched closing parenthesis.");
             }
-            paraStack.pop();
+            paraTracker--;
         }
     }
-    if (!paraStack.empty()) { // if not all paras got popped, it means that a para went unmatched.
+    if (paraTracker != 0) { // if not all paras got removed from tracker, it means that a para went unmatched.
         throw runtime_error("Unmatched opening parenthesis.");
     }
 
@@ -415,7 +414,7 @@ int main() {
         // find result and handle errors
         try {
             string result = lexer(line);
-            cout << "Lexed: |" << result << "|" << endl;
+            // cout << "Lexed: |" << result << "|" << endl;
             result = parseAndEval(result);
             if (result == "Error") {
                 cout << "Unknown Error" << endl;
