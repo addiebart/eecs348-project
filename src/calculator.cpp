@@ -104,7 +104,7 @@ string lexer(const string &input) {
     // check for invalid operator placement
     for (int i = 0; i < str.length(); i++) {
         char c = str[i];
-        if ((c == '+' || c == '-' || c == '*' || c == '/' || c == '^')) {
+        if ((c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == '%')) {
             // input is invalid if non unary operator at beginning
             if (i == 0 && c != '-' && c != '+') {
                 throw runtime_error("Invalid operator usage.");
@@ -351,13 +351,12 @@ string parseAndEval(const string &str) {
 
 inline bool test(const string &msg, const string &str, long expected) {
     cout << msg << ": ";
-    //cout << "Testing \"" + str + "\" = " + to_string(expected) + ": ";
     bool pass = expected == stol(parseAndEval(lexer(str)));
     cout << ((pass) ? "Passed!" : "Failed!") << endl;
     return pass;
 }
 
-inline bool errorTest(const string &in, const string &msg, const string &errmsg) {
+inline bool errorTest(const string &msg, const string &in, const string &errmsg) {
     cout << msg << ": ";
     bool pass = false;
     try {
@@ -372,40 +371,56 @@ inline bool errorTest(const string &in, const string &msg, const string &errmsg)
 void testCases() {
     bool allPass = true;
 
-    allPass = test("Addition", "8 - (5 - 2)", 5) && allPass;
-    allPass = test("Subtraction with Parentheses", "3 + 4", 7) && allPass;
+    allPass = test("Addition", "3 + 4", 7) && allPass;
+    allPass = test("Subtraction with Parentheses", "8 - (5 - 2)",5) && allPass;
     allPass = test("Multiplication and Division", "10 * 2 / 5", 4) && allPass;
     allPass = test("Exponentiation", "2 ** 3", 8) && allPass;
-    allPass = test("Mixed Operators", "4 * (3 + 2) % 7 - 1", 5) && allPass;
+    allPass = test("Mixed Operators 1", "4 * (3 + 2) % 7 - 1", 5) && allPass;
     allPass = test("Complex Addition with Extraneous Operators", "(((2 + 3))) + (((1 + 2)))", 8) && allPass;
     allPass = test("Mixed Operators with Extraneous Parentheses", "(5 * 2) - (((3 / 1) + ((4 % 3))))", 6) && allPass;
     allPass = test("Nested Parentheses with Exponents", "(((2 ** (1 + 1)) + ((3 - 1) ** 2)) / ((4 / 2) % 3))", 4) && allPass;
     allPass = test("Combination of Extraneous and Necessary Parentheses", "(((((5 - 3))) * (((2 + 1))) + ((2 * 3))))", 12) && allPass;
-    allPass = test("Effects of Integer Division", "10 * (3 / 2)", 10) && allPass;
+    allPass = test("Effects of Integer Division 1", "10 * (3 / 2)", 10) && allPass;
     allPass = test("Combining Unary Operators with Arithmetic Operations", "+(-2) * (-3) - ((-4) / (+5))", 6) && allPass;
     allPass = test("Unary Negation and Addition in Parentheses", "-(+1) + (+2)", 1) && allPass;
     allPass = test("Negation and Addition with Negated Parentheses", "-(-(-3)) + (-4) + (+5)", -2) && allPass;
     allPass = test("Unary Negation, Exponentiation, and Int Division", "+2 ** (-3)", 0) && allPass;
     allPass = test("Combining Unary Operators with Parentheses", "-(+2) * (+3) - (-4) / (-5)", -6) && allPass;
     allPass = test("Implied Multiplication", "4(5)", 20) && allPass;
-    allPass = errorTest("* 5 + 2", "Operators without operands", "Invalid operator usage.") && allPass;
-    allPass = errorTest("4 / 0", "Divide by zero", "Division by zero occurred.") && allPass;
-    allPass = errorTest("4 % 0", "Mod by zero", "Division by zero occurred.") && allPass;
-    allPass = errorTest("7 & 3", "Invalid characters", "Invalid character in input.") && allPass;
-    allPass = errorTest("(((3 + 4) - 2) + (1)", "Mismatched parentheses", "Unmatched opening parenthesis.") && allPass;
-    allPass = errorTest("(5 + 2) / (3 * 0)", "Invalid operator usage", "Division by zero occurred.") && allPass;
-    allPass = errorTest("((2-) 1 + 3)", "Incorrect operator sequence", "Invalid operator usage.") && allPass;
-    allPass = errorTest("((4 * 2) + ( - ))", "Missing operand", "Invalid operator usage.") && allPass;
+    allPass = errorTest("Unmatched Parentheses", "2 * (4 + 3 - 1", "Unmatched opening parenthesis.") && allPass;
+    allPass = errorTest("Operators Without Operands 1", "* 5 + 2", "Invalid operator usage.") && allPass;
+    allPass = errorTest("Divide by Zero", "4 / 0", "Division by zero occurred.") && allPass;
+    allPass = errorTest("Modulo by Zero", "4 % 0", "Division by zero occurred.") && allPass;
+    allPass = errorTest("Invalid Characters", "7 & 3", "Invalid character in input.") && allPass;
+    allPass = errorTest("Mismatched Parentheses 1", "(((3 + 4) - 2) + (1)", "Unmatched opening parenthesis.") && allPass;
+    allPass = errorTest("Divide by Zero Multiplication Product", "(5 + 2) / (3 * 0)", "Division by zero occurred.") && allPass;
+    allPass = errorTest("Incorrect Operator Sequence", "((2-) 1 + 3)",  "Invalid operator usage.") && allPass;
+    allPass = errorTest("Operators Without Operands 2", "((4 * 2) + ( - ))", "Invalid operator usage.") && allPass;
     allPass = test("Multiply by Zero", "4 % 2 (1) + 3 ** 5", 243) && allPass;
     allPass = test("Exponent and Modulo", "2 ** 5 % 4", 0) && allPass;
-    allPass = errorTest("9223372036854775806+12", "Overflow by Addition", "Integer over/underflow.") && allPass;
-    allPass = errorTest("-9223372036854775806+-12", "Underflow by Addition", "Integer over/underflow.") && allPass;
-    allPass = errorTest("9223372036854775806--12", "Overflow by Subtraction", "Integer over/underflow.") && allPass;
-    allPass = errorTest("-9223372036854775806-12", "Underflow by Subtraction", "Integer over/underflow.") && allPass;
-    allPass = errorTest("4611686018427387915 * 2", "Overflow by Multiplication", "Integer over/underflow.") && allPass;
-    allPass = errorTest("-4611686018427387915 * 2", "Underflow by Multiplication", "Integer over/underflow.") && allPass;
-    allPass = errorTest("200 ** 75", "Overflow by Exponentiation", "Integer over/underflow.") && allPass;
-    allPass = errorTest("(-200) ** 75", "Underflow by Exponentiation", "Integer over/underflow.") && allPass;
+    allPass = errorTest("Overflow by Addition", "9223372036854775806+12", "Integer over/underflow.") && allPass;
+    allPass = errorTest("Underflow by Addition", "-9223372036854775806+-12", "Integer over/underflow.") && allPass;
+    allPass = errorTest("Overflow by Subtraction", "9223372036854775806--12",  "Integer over/underflow.") && allPass;
+    allPass = errorTest("Underflow by Subtraction", "-9223372036854775806-12", "Integer over/underflow.") && allPass;
+    allPass = errorTest("Overflow by Multiplication", "4611686018427387915 * 2", "Integer over/underflow.") && allPass;
+    allPass = errorTest("Underflow by Multiplication", "-4611686018427387915 * 2", "Integer over/underflow.") && allPass;
+    allPass = errorTest("Overflow by Exponentiation", "200 ** 75", "Integer over/underflow.") && allPass;
+    allPass = errorTest("Underflow by Exponentiation", "(-200) ** 75", "Integer over/underflow.") && allPass;
+    allPass = test("Complex Mixed Operators 1", "(((4+2)-6)**2) + ((2*4)-(2**3)) * ((64/8) % 3)", 0) && allPass;
+    allPass = test("Complex Mixed Operators 2", "(((5**3)/14)+27)*((17-15)**2)-(57+((7*3)-18))", 80) && allPass;
+    allPass = test("Modulo and Exponent", "72 % 7 ** 2", 23) && allPass;
+    allPass = test("Divide by Zero Modulo Product", "72 % 7 ** 2", 23) && allPass;
+    allPass = test("Mixed Operators 2", "15 - 27 * 2 + 38 % 12", -37) && allPass;
+    allPass = test("Combining Unary Operators with Parentheses and Implied Multiplication", "(+4)(-2)+(+6)(-3)-(-8)", -18) && allPass;
+    allPass = errorTest("Mismatched Parentheses 2", "((7-2) % 3))", "Unmatched closing parenthesis.") && allPass;
+    allPass = errorTest("Operators Without Operands 3", "**7+3", "Invalid operator usage.") && allPass;
+    allPass = errorTest("Operators Without Operands 4", "% 5 - (9-0) /2 +5", "Invalid operator usage.") && allPass;
+    allPass = test("Mixed Operators 3", "3 + 9 - 2 * 2 **2 % 2 ", 12) && allPass;
+    allPass = test("Effects of Integer Division 2", "(7 % 4) ** 3 / 4", 6) && allPass;
+    allPass = test("Implied Multiplication and Exponentiation 1", "(5) 7 ** 2", 245) && allPass;
+    allPass = test("Implied Multiplication and Exponentiation 2", "8 ** 5 (6)", 196608) && allPass;
+    allPass = test("Complex Exponentiation", "2 ** 3 ** 4", 4096) && allPass;
+    allPass = errorTest("Complex Exponentiation Overflow", "2 ** (3 ** 4)", "Integer over/underflow.") && allPass;
 
     cout << ((allPass) ? "All test cases passed." : "At least one test case failed.") << endl;
 }
