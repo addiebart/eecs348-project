@@ -171,14 +171,16 @@ string binaryEval(const string &left, char op, const string &right) {
             break;
         case '+':
             result = l + r;
-            check = abs(l) + abs(r);
+            // if adding like signs (because the signs will stay the same)
+            check = ((l >= 0 && r >= 0) || (l <= 0 && r <= 0)) ? abs(l) + abs(r) : abs(l + r);
             if (abs(result) != check) {
                 throw runtime_error("Integer over/underflow!");
             }
             break;
         case '-':
             result = l - r;
-            check = (l < 0 && r < 0) ? abs(l) + abs(r) : abs(l - r);
+            // if subtracting from a negative number, or adding (by subtracting a negative) to a positive number
+            check = ((l <= 0 && r >= 0) || (l >= 0 && r <= 0)) ? abs(l) + abs(r) : abs(l - r);
             if (abs(result) != check) {
                 throw runtime_error("Integer over/underflow!");
             }
@@ -353,8 +355,15 @@ inline void test(const string &str, long expected) {
     cout << ((actual == expected) ? "Passed!" : "Failed!") << endl;
 }
 
-inline void errorTest(const string &in, const string &msg) {
-    
+inline void errorTest(const string &in, const string &msg, const string &errmsg) {
+    cout << msg << ": ";
+    bool pass = false;
+    try {
+        parseAndEval(lexer(in));
+    } catch (const exception &e) {
+        pass = e.what() == errmsg;
+    }
+    cout << ((pass) ? "Passed!" : "Failed!") << endl;
 }
 
 void testCases() {
@@ -377,16 +386,10 @@ void testCases() {
 
     // error cases
     // div by 0
-    try {
-        cout << "Testing divide by zero: ";
-        parseAndEval(lexer("10/(6%2)"));
-        cout << "Failed!" << endl;
-    } catch (const runtime_error &e) {
-        cout << "Passed!" << endl;
-    }
+    errorTest("10 / (6 % 2)", "Divide by zero", "Division by zero occurred!");
     // mod by 0
     try {
-        cout << "Testing mod by zero: ";
+        cout << "Mod by zero: ";
         parseAndEval(lexer("10%(6-2*3)"));
         cout << "Failed!" << endl;
     } catch (const runtime_error &e) {
