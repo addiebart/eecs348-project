@@ -119,10 +119,10 @@ string lexer(const string &input) {
                 continue;
             }
             // check for operator placement using general rules
-            bool leftCharCompliant = isNumeric(str[i - 1]) || str[i - 1] == ')'; // && input[i - 1] != '('
-            bool rightCharCompliant = isNumeric(str[i + 1]) || str[i + 1] == '(';
+            bool leftCharCompliant = isNumeric(str[i - 1]) || str[i - 1] == ')'; // conditions for left to be valid
+            bool rightCharCompliant = isNumeric(str[i + 1]) || str[i + 1] == '(' || ((str[i + 1] == '+' || str[i + 1] == '-') && minusIsNegation(str, i + 1)); // conditions for right to be valid
             if (!(leftCharCompliant && rightCharCompliant)) {
-                throw runtime_error("Error: Invalid operator usage.");
+                throw runtime_error("Error: Invalid operator usage. Index=" + to_string(i));
             }
         }
     }
@@ -328,14 +328,14 @@ string parseAndEval(const string &str) {
 
 inline void test(const string& str, long expected) {
     cout << "Testing \"" + str + "\" = " + to_string(expected) + ": ";
-    long actual = stol(parseAndEval(str));
+    long actual = stol(parseAndEval(lexer(str)));
     cout << ((actual == expected) ? "Passed!" : "Failed!") << endl;
 }
 
 void testCases() {
     test("2+2", 4);
     test("2+2+2", 6);
-    test("2^3", 8);
+    test("2**3", 8);
     test("-2+5", 3);
     test("-2-5", -7);
     test("-2--5", 3);
@@ -344,11 +344,11 @@ void testCases() {
     test("6%4/2", 1);
     test("6%(4/2)", 0);
     test("((3+5)/2)+(3*5+2)", 21);
-    test("4^-2", 0); // = 1/16 = 0 by int divison
-    test("-2^2", -4);
-    test("(-2)^2", 4);
-    test("-7*(30/1+17%3)-3^2", (-7*((30/1)+(17%3)))-pow(3,2));
-    test("-7*(30/1+17%3)-3^-2", (-7*((30/1)+(17%3)))-pow(3,-2));
+    test("4**-2", 0); // = 1/16 = 0 by int divison
+    test("-2**2", -4);
+    test("(-2)**2", 4);
+    test("-7*(30/1+17%3)-3**2", (-7*((30/1)+(17%3)))-pow(3,2));
+    test("-7*(30/1+17%3)-3**-2", (-7*((30/1)+(17%3)))-pow(3,-2));
 
     // error cases
     // div by 0
