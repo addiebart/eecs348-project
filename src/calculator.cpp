@@ -7,7 +7,7 @@ calculator.cpp
 
 #include <iostream>
 #include <string>
-#include <cmath> // for pow() only
+#include <cmath>
 #include <stdexcept>
 #include <regex>
 
@@ -131,15 +131,27 @@ string lexer(const string &input) {
 
 // performs an operation on two ints stored as strings. returns a string.
 string binaryEval(const string &left, char op, const string &right) {
-    long l = stol(left);
-    long r = stol(right);
+    long l, r;
+    try {
+        l = stol(left);
+        r = stol(right);
+    } catch (const exception &e) {
+        throw runtime_error("Could not convert string to number. It is possible that a number outside the integer size bounds was provided by the user.");
+    }
     long result;
+    bool negative;
+    unsigned long check;
     switch (op) {
         case '^':
             result = pow(l, r);
             break;
         case '*':
             result = l * r;
+            negative = (l > 0 && r < 0) || (l < 0 && r > 0);
+            check = abs(l) * abs(r);
+            if (abs(result) != check || l != result / r) {
+                throw runtime_error("Integer over/underflow!");
+            }
             break;
         case '/':
             // check for division by zero
@@ -157,16 +169,24 @@ string binaryEval(const string &left, char op, const string &right) {
             break;
         case '+':
             result = l + r;
+            check = abs(l) + abs(r);
+            if (abs(result) != check) {
+                throw runtime_error("Integer over/underflow!");
+            }
             break;
         case '-':
             result = l - r;
+            check = abs(l) - abs(r);
+            if (abs(result) != check) {
+                throw runtime_error("Integer over/underflow!");
+            }
             break;
         default:
             cout << "invalid op in binaryOperation" << endl;
     }
     string resultstr = to_string(result);
     if (resultstr == "-9223372036854775808") {
-        throw runtime_error("Long int overflow/underflow!");
+        throw runtime_error("Integer over/underflow!");
     }
     return resultstr;
 }
@@ -353,7 +373,7 @@ void testCases() {
     // div by 0
     try {
         cout << "Testing divide by zero: ";
-        parseAndEval("10/(6%2)");
+        parseAndEval(lexer("10/(6%2)"));
         cout << "Failed!" << endl;
     } catch (const runtime_error &e) {
         cout << "Passed!" << endl;
@@ -361,7 +381,7 @@ void testCases() {
     // mod by 0
     try {
         cout << "Testing mod by zero: ";
-        parseAndEval("10%(6-2*3)");
+        parseAndEval(lexer("10%(6-2*3)"));
         cout << "Failed!" << endl;
     } catch (const runtime_error &e) {
         cout << "Passed!" << endl;
@@ -369,7 +389,7 @@ void testCases() {
     // overflow
     try {
         cout << "Overflow: ";
-        parseAndEval("200^75");
+        parseAndEval(lexer("9223372036854775806--12"));
         cout << "Failed!" << endl;
     } catch (const runtime_error &e) {
         cout << "Passed!" << endl;
@@ -377,7 +397,7 @@ void testCases() {
     // underflow
     try {
         cout << "Underflow: ";
-        parseAndEval("-200^75");
+        parseAndEval(lexer("-9223372036854775807+-12"));
         cout << "Failed!" << endl;
     } catch (const runtime_error &e) {
         cout << "Passed!" << endl;
@@ -385,7 +405,7 @@ void testCases() {
     // invalid input
     try {
         cout << "Invalid Input (\"/*x\"): ";
-        parseAndEval("/*x");
+        parseAndEval(lexer("/*x"));
         cout << "Failed!" << endl;
     } catch (const exception &e) {
         cout << "Passed!" << endl;
@@ -424,7 +444,7 @@ int main() {
         } catch (const runtime_error &e) {
             cout << "Error: " << e.what() << endl;
         } catch (const exception &e) {
-            cout << "Error: Invalid Input" << endl;
+            cout << "Error: Unknown Error" << endl;
         }
         cout << endl;       
     }
