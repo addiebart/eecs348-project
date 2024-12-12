@@ -178,7 +178,7 @@ string binaryEval(const string &left, char op, const string &right) {
             break;
         case '-':
             result = l - r;
-            check = abs(l) - abs(r);
+            check = (l < 0 && r < 0) ? abs(l) + abs(r) : abs(l - r);
             if (abs(result) != check) {
                 throw runtime_error("Integer over/underflow!");
             }
@@ -347,10 +347,14 @@ string parseAndEval(const string &str) {
     return "Error";
 }
 
-inline void test(const string& str, long expected) {
+inline void test(const string &str, long expected) {
     cout << "Testing \"" + str + "\" = " + to_string(expected) + ": ";
     long actual = stol(parseAndEval(lexer(str)));
     cout << ((actual == expected) ? "Passed!" : "Failed!") << endl;
+}
+
+inline void errorTest(const string &in, const string &msg) {
+    
 }
 
 void testCases() {
@@ -436,7 +440,6 @@ int main() {
         // find result and handle errors
         try {
             string result = lexer(line);
-            // cout << "Lexed: |" << result << "|" << endl;
             result = parseAndEval(result);
             if (result == "Error") {
                 cout << "Unknown Error" << endl;
