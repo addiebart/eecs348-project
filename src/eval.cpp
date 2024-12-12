@@ -246,10 +246,14 @@ void testCases() {
     test("-2+5", 3);
     test("-2-5", -7);
     test("-2--5", 3);
+    test("2--5", 7);
+    test("6472%100", 72);
     test("6%4/2", 1);
     test("6%(4/2)", 0);
     test("((3+5)/2)+(3*5+2)", 21);
     test("4^-2", 0); // = 1/16 = 0 by int divison
+    test("-2^2", -4);
+    test("(-2)^2", 4);
     test("-7*(30/1+17%3)-3^2", (-7*((30/1)+(17%3)))-pow(3,2));
     test("-7*(30/1+17%3)-3^-2", (-7*((30/1)+(17%3)))-pow(3,-2));
 
@@ -259,7 +263,7 @@ void testCases() {
         cout << "Testing divide by zero: ";
         parseAndEval("10/(6%2)");
         cout << "Failed!" << endl;
-    } catch (const exception& e) {
+    } catch (const runtime_error &e) {
         cout << "Passed!" << endl;
     }
     // mod by 0
@@ -267,7 +271,7 @@ void testCases() {
         cout << "Testing mod by zero: ";
         parseAndEval("10%(6-2*3)");
         cout << "Failed!" << endl;
-    } catch (const exception& e) {
+    } catch (const runtime_error &e) {
         cout << "Passed!" << endl;
     }
     // overflow
@@ -275,7 +279,7 @@ void testCases() {
         cout << "Overflow: ";
         parseAndEval("200^75");
         cout << "Failed!" << endl;
-    } catch (const exception& e) {
+    } catch (const runtime_error &e) {
         cout << "Passed!" << endl;
     }
     // underflow
@@ -283,7 +287,15 @@ void testCases() {
         cout << "Underflow: ";
         parseAndEval("-200^75");
         cout << "Failed!" << endl;
-    } catch (const exception& e) {
+    } catch (const runtime_error &e) {
+        cout << "Passed!" << endl;
+    }
+    // invalid input
+    try {
+        cout << "Invalid Input (\"/*x\"): ";
+        parseAndEval("/*x");
+        cout << "Failed!" << endl;
+    } catch (const exception &e) {
         cout << "Passed!" << endl;
     }
 }
@@ -294,6 +306,15 @@ int main() {
         cout << "Provide an expression to simplify, enter 't' to run test cases, or 'q' to quit:" << endl;
         string line;
         getline(cin, line);
+        
+        // try to move to lexar later
+        for (int i = 0; i < line.length(); i++) {
+            if (line[i] == '-') {
+                string l = line.substr(0, i);
+                string r = line.substr(i + 1);
+                line = l + "-1*" + r;
+            }
+        }
 
         // check for quit signal
         if (line == "q") {
@@ -315,8 +336,10 @@ int main() {
             } else {
                 cout << result << endl;
             }
-        } catch (const exception &e) {
+        } catch (const runtime_error &e) {
             cout << "Error: " << e.what() << endl;
+        } catch (const exception &e) {
+            cout << "Error: Invalid Input" << endl;
         }
         cout << endl;       
     }
