@@ -147,10 +147,12 @@ string binaryEval(const string &left, char op, const string &right) {
             break;
         case '*':
             result = l * r;
-            negative = (l > 0 && r < 0) || (l < 0 && r > 0);
-            check = abs(l) * abs(r);
-            if (abs(result) != check || l != result / r) {
-                throw runtime_error("Integer over/underflow!");
+            if (result != 0) {
+                negative = (l > 0 && r < 0) || (l < 0 && r > 0);
+                check = abs(l) * abs(r);
+                if (abs(result) != check || l != result / r) {
+                    throw runtime_error("Integer over/underflow!");
+                }
             }
             break;
         case '/':
