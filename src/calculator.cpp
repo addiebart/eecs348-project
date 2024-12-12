@@ -2,7 +2,7 @@
 EECS 348 Term Project
 Group 3, Fall 2024
 Calculator
-eval.cpp
+calculator.cpp
 */
 
 #include <iostream>
