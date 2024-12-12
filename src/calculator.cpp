@@ -9,6 +9,8 @@ eval.cpp
 #include <string>
 #include <cmath> // for pow() only
 #include <stdexcept>
+#include <regex>
+#include <stack>
 
 using namespace std;
 
@@ -28,6 +30,104 @@ inline bool isNumeric(char c) {
             return true;
     }
     return false;
+}
+
+// returns a bool for if a '-' with index i in str is for negation or subtraction based on the character to its left
+// true: negation
+// false: subtraction
+inline bool minusIsNegation(const string &str, int i) {
+    return !(isNumeric(str[i-1]) || str[i-1] == ')');
+}
+
+string lexer(const string &input) {
+    // copy str
+    string str = input;
+
+    // check for only valid characters
+    regex validChars("([0-9+\\-*/%()]+)");
+    if (!regex_match(str, validChars)) {
+        throw runtime_error("Error: Invalid character in input.");
+    }
+
+    // remove spaces, change ** to ^
+    for (int i = 0; i < str.length(); i++) {
+        if (str[i] == '*' && str[i+1] == '*') {
+            str[i] = '^';
+            str.erase(i+1, 1);
+        }
+        if (str[i] == ' ') {
+            str.erase(i--, 1); // remove space
+        }
+    }
+
+    // add implied multiplication
+    for (int i = 0; i < str.length(); i++) {
+        if (str[i] == '(' && i > 0 && (isNumeric(str[i - 1]) || str[i - 1] == ')')) {
+            str.insert(i++, "*");
+        }
+        if (str[i] == ')' && i + 1 < str.length() && (isNumeric(str[i + 1]) || str[i + 1] == '(')) {
+            str.insert(++i, "*");
+        }
+    }
+
+    // change all negation to multiplication by negative 1
+    for (int i = 0; i < str.length(); i++) {
+        if (str[i] == '-') {
+            string l = str.substr(0, i);
+            string r = str.substr(i + 1);
+            str = l + "-1*" + r;
+        }
+    }
+
+    // check for matching parentheses
+    stack <char> paraStack; // use a stack to check paraenthetical matching, stores left paras only
+    for (int i = 0; i < str.length(); i++) {
+        if (str[i] == '(') { 
+            paraStack.push('(');
+        } else if (str[i] == ')') { // if recived right, remove a left
+            if (paraStack.empty()) { // if you cant remove a corresponding left, there is an imbalance
+                throw runtime_error("Error: Unmatched closing parenthesis.");
+            }
+            paraStack.pop();
+        }
+    }
+    if (!paraStack.empty()) { // if not all paras got popped, it means that a para went unmatched.
+        throw runtime_error("Error: Unmatched opening parenthesis.");
+    }
+
+    // handle unary + for inverse negation
+    for (int i = 0; i < str.length(); i++) {
+        if (str[i] == '+' && minusIsNegation(str, i)) {
+            str.erase(i--, 1);
+        }
+    }
+
+    // check for invalid operator placement
+    for (int i = 0; i < str.length(); i++) {
+        char c = str[i];
+        if ((c == '+' || c == '-' || c == '*' || c == '/' || c == '^')) {
+            // input is invalid if non unary operator at beginning
+            if (i == 0 && c != '-' && c != '+') {
+                throw runtime_error("Error: Invalid operator usage.");
+            }
+            // input is invalid if any operator at end
+            if (i == str.length() - 1) {
+                throw runtime_error("Error: Invalid operator usage.");
+            }
+            // account for unary operator execptions
+            if ((c == '-' || c == '+') && minusIsNegation(str, i)) {
+                continue;
+            }
+            // check for operator placement using general rules
+            bool leftCharCompliant = isNumeric(str[i - 1]) || str[i - 1] == ')'; // && input[i - 1] != '('
+            bool rightCharCompliant = isNumeric(str[i + 1]) || str[i + 1] == '(';
+            if (!(leftCharCompliant && rightCharCompliant)) {
+                throw runtime_error("Error: Invalid operator usage.");
+            }
+        }
+    }
+
+    return str;
 }
 
 // performs an operation on two ints stored as strings. returns a string.
@@ -70,13 +170,6 @@ string binaryEval(const string &left, char op, const string &right) {
         throw runtime_error("Long int overflow/underflow!");
     }
     return resultstr;
-}
-
-// returns a bool for if a '-' with index i in str is for negation or subtraction based on the character to its left
-// true: negation
-// false: subtraction
-inline bool minusIsNegation(const string &str, int i) {
-    return !(isNumeric(str[i-1]) || str[i-1] == ')');
 }
 
 // fills arr with indicies of operators in str
@@ -306,15 +399,6 @@ int main() {
         cout << "Provide an expression to simplify, enter 't' to run test cases, or 'q' to quit:" << endl;
         string line;
         getline(cin, line);
-        
-        // try to move to lexar later
-        for (int i = 0; i < line.length(); i++) {
-            if (line[i] == '-') {
-                string l = line.substr(0, i);
-                string r = line.substr(i + 1);
-                line = l + "-1*" + r;
-            }
-        }
 
         // check for quit signal
         if (line == "q") {
@@ -330,7 +414,9 @@ int main() {
         
         // find result and handle errors
         try {
-            string result = parseAndEval(line);
+            string result = lexer(line);
+            cout << "Lexed: |" << result << "|" << endl;
+            result = parseAndEval(result);
             if (result == "Error") {
                 cout << "Unknown Error" << endl;
             } else {
