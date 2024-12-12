@@ -136,7 +136,7 @@ string binaryEval(const string &left, char op, const string &right) {
         l = stol(left);
         r = stol(right);
     } catch (const exception &e) {
-        throw runtime_error("Could not convert string to number. It is possible that a number outside the integer size bounds was provided by the user.");
+        throw runtime_error("Could not convert string to number. This is likely because a number outside the integer size bounds was provided by the user.");
     }
     long result;
     bool negative;
@@ -148,24 +148,24 @@ string binaryEval(const string &left, char op, const string &right) {
         case '*':
             result = l * r;
             if (result != 0) {
-                negative = (l > 0 && r < 0) || (l < 0 && r > 0);
                 check = abs(l) * abs(r);
+                // check that the abs is the same and use algebra to determine if an overflow as ocurred
                 if (abs(result) != check || l != result / r) {
-                    throw runtime_error("Integer over/underflow!");
+                    throw runtime_error("Integer over/underflow.");
                 }
             }
             break;
         case '/':
             // check for division by zero
             if (r == 0) {
-                throw runtime_error("Division by zero occurred!");
+                throw runtime_error("Division by zero occurred.");
             }
             result = l / r;
             break;
         case '%':
             // check for divison by zero
             if (r == 0) {
-                throw runtime_error("Division by zero occurred!");
+                throw runtime_error("Division by zero occurred.");
             }
             result = l % r;
             break;
@@ -174,7 +174,7 @@ string binaryEval(const string &left, char op, const string &right) {
             // if adding like signs (because the signs will stay the same)
             check = ((l >= 0 && r >= 0) || (l <= 0 && r <= 0)) ? abs(l) + abs(r) : abs(l + r);
             if (abs(result) != check) {
-                throw runtime_error("Integer over/underflow!");
+                throw runtime_error("Integer over/underflow.");
             }
             break;
         case '-':
@@ -182,15 +182,15 @@ string binaryEval(const string &left, char op, const string &right) {
             // if subtracting from a negative number, or adding (by subtracting a negative) to a positive number
             check = ((l <= 0 && r >= 0) || (l >= 0 && r <= 0)) ? abs(l) + abs(r) : abs(l - r);
             if (abs(result) != check) {
-                throw runtime_error("Integer over/underflow!");
+                throw runtime_error("Integer over/underflow.");
             }
             break;
         default:
-            cout << "invalid op in binaryOperation" << endl;
+            throw runtime_error("Invalid opeator in binaryOperation.");
     }
     string resultstr = to_string(result);
     if (resultstr == "-9223372036854775808") {
-        throw runtime_error("Integer over/underflow!");
+        throw runtime_error("Integer over/underflow.");
     }
     return resultstr;
 }
@@ -386,39 +386,20 @@ void testCases() {
 
     // error cases
     // div by 0
-    errorTest("10 / (6 % 2)", "Divide by zero", "Division by zero occurred!");
-    // mod by 0
-    try {
-        cout << "Mod by zero: ";
-        parseAndEval(lexer("10%(6-2*3)"));
-        cout << "Failed!" << endl;
-    } catch (const runtime_error &e) {
-        cout << "Passed!" << endl;
-    }
-    // overflow
-    try {
-        cout << "Overflow: ";
-        parseAndEval(lexer("9223372036854775806--12"));
-        cout << "Failed!" << endl;
-    } catch (const runtime_error &e) {
-        cout << "Passed!" << endl;
-    }
-    // underflow
-    try {
-        cout << "Underflow: ";
-        parseAndEval(lexer("-9223372036854775807+-12"));
-        cout << "Failed!" << endl;
-    } catch (const runtime_error &e) {
-        cout << "Passed!" << endl;
-    }
+    errorTest("10 / (6 % 2)", "Divide by zero", "Division by zero occurred.");
+    errorTest("10 % (6 - 2 * 3)", "Mod by zero", "Division by zero occurred.");
+    // overflow and underflow
+    errorTest("9223372036854775806--12", "Overflow by subtraction", "Integer over/underflow.");
+    errorTest("-9223372036854775806-12", "Underflow by subtraction", "Integer over/underflow.");
+    errorTest("9223372036854775806+12", "Overflow by addition", "Integer over/underflow.");
+    errorTest("-9223372036854775806+-12", "Underflow by addition", "Integer over/underflow.");
+    errorTest("((9223372036854775806 / 2) + 12) * 2", "Overflow by multiplication", "Integer over/underflow.");
+    errorTest("((-9223372036854775806 / 2) - 12) * 2", "Underflow by multiplication", "Integer over/underflow.");
+    errorTest("200^75", "Overflow by exponentation", "Integer over/underflow.");
+    errorTest("(-200)^75", "Underflow by exponentation", "Integer over/underflow.");
     // invalid input
-    try {
-        cout << "Invalid Input (\"/*x\"): ";
-        parseAndEval(lexer("/*x"));
-        cout << "Failed!" << endl;
-    } catch (const exception &e) {
-        cout << "Passed!" << endl;
-    }
+    errorTest("6x + 7", "Invalid characters (\"6x + 7\")", "Invalid character in input.");
+    errorTest("* 5 + 2", "Operators without operands", "Invalid operator usage.");
 }
 
 int main() {
