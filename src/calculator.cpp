@@ -46,7 +46,7 @@ string lexer(const string &input) {
     // check for only valid characters
     regex validChars("([0-9+\\-*/%()]+)");
     if (!regex_match(str, validChars)) {
-        throw runtime_error("Error: Invalid character in input.");
+        throw runtime_error("Invalid character in input.");
     }
 
     // remove spaces, change ** to ^
@@ -86,13 +86,13 @@ string lexer(const string &input) {
             paraStack.push('(');
         } else if (str[i] == ')') { // if recived right, remove a left
             if (paraStack.empty()) { // if you cant remove a corresponding left, there is an imbalance
-                throw runtime_error("Error: Unmatched closing parenthesis.");
+                throw runtime_error("Unmatched closing parenthesis.");
             }
             paraStack.pop();
         }
     }
     if (!paraStack.empty()) { // if not all paras got popped, it means that a para went unmatched.
-        throw runtime_error("Error: Unmatched opening parenthesis.");
+        throw runtime_error("Unmatched opening parenthesis.");
     }
 
     // handle unary + for inverse negation
@@ -108,11 +108,11 @@ string lexer(const string &input) {
         if ((c == '+' || c == '-' || c == '*' || c == '/' || c == '^')) {
             // input is invalid if non unary operator at beginning
             if (i == 0 && c != '-' && c != '+') {
-                throw runtime_error("Error: Invalid operator usage.");
+                throw runtime_error("Invalid operator usage. Index=" + to_string(i));
             }
             // input is invalid if any operator at end
             if (i == str.length() - 1) {
-                throw runtime_error("Error: Invalid operator usage.");
+                throw runtime_error("Invalid operator usage. Index=" + to_string(i));
             }
             // account for unary operator execptions
             if ((c == '-' || c == '+') && minusIsNegation(str, i)) {
@@ -122,7 +122,7 @@ string lexer(const string &input) {
             bool leftCharCompliant = isNumeric(str[i - 1]) || str[i - 1] == ')'; // conditions for left to be valid
             bool rightCharCompliant = isNumeric(str[i + 1]) || str[i + 1] == '(' || ((str[i + 1] == '+' || str[i + 1] == '-') && minusIsNegation(str, i + 1)); // conditions for right to be valid
             if (!(leftCharCompliant && rightCharCompliant)) {
-                throw runtime_error("Error: Invalid operator usage. Index=" + to_string(i));
+                throw runtime_error("Invalid operator usage. Index=" + to_string(i));
             }
         }
     }
