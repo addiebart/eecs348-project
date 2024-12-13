@@ -52,3 +52,26 @@ Team Meeting 11/10
 WHEN: Asynchronous via Discord
 PURPOSE: Finished Software Architecture Design document and worked through questions on design and sections of the document.
 ATTENDANCE: (All members) Peter, Addison, Hart, Emily, Arpa
+
+Team Meeting 11/20
+WHEN: LEEP @ 7
+PURPOSE: Brainstormed implementation strategy. Decided on using main subroutine function architecture with lexer, parser, and evaluator functions that feed into each other and are called in main. Split up sections of the functions to write. 
+	Hart - Lexer
+	Addison - Parser
+	Peter, Emily, Arpa - Evaluator and I/O
+ATTENDANCE: (All members) Peter, Addison, Hart, Emily, Arpa
+
+Team Meeting 12/06
+WHEN: 2pm @ LEEP
+PURPOSE: Met and discussed how to change approach on lexer, parser, and evaluator functions. Parser and evaluator will be combined into one function with helper functions to assist it. Lexer will be further edited to handle more errors and feed into the parser/evaluator.
+ATTENDANCE: Peter, Addison, Hart
+
+Team Meeting 12/11
+WHEN: 7pm @ LEEP
+PURPOSE: Linked together lexer and parseANDeval functions to create the full calculator. Began working on bug fixes and started on the test case document and users manual. Split the sections accordingly.
+ATTENDANCE: (All members) Peter, Addison, Hart, Emily, Arpa
+
+Team Meeting 12/12
+WHEN: 11am @ M2SEC, later asynchronous on discord
+PURPOSE: Fixed bigs in implementation, finalized test cases, completed users manual.
+ATTENDANCE: (All members) Peter, Addison, Hart, Emily, Arpa
