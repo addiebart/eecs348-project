@@ -32,8 +32,9 @@ inline bool isNumeric(char c) {
 }
 
 // returns a bool for if a '-' with index i in str is for negation or subtraction based on the character to its left
-// true: negation
-// false: subtraction
+// this also works to determine if a '+' is to mark a number as positive, or to be used for addition
+// true: negation, or positive marker
+// false: subtraction, or addition
 inline bool minusIsNegation(const string &str, int i) {
     return !(isNumeric(str[i-1]) || str[i-1] == ')');
 }
@@ -132,21 +133,26 @@ string lexer(const string &input) {
 // performs an operation on two ints stored as strings. returns a string.
 string binaryEval(const string &left, char op, const string &right) {
     long l, r;
+    // cast strings to longs
     try {
         l = stol(left);
         r = stol(right);
     } catch (const exception &e) {
+        // errors in cast are most likely for integers in excess of the sint64 limit
         throw runtime_error("Could not convert string to number. This is likely because a number outside the integer size bounds was provided by the user.");
     }
+    // declare some vars
     long result;
     bool negative;
-    unsigned long check;
+    unsigned long check; // an unsigned long stores values of greater magintude. we use this to check for overflows.
+    // run code depending on the operator
     switch (op) {
         case '^':
             result = pow(l, r);
             break;
         case '*':
             result = l * r;
+            // if result is 0, no need to check for overflow. skip block to prevent div by 0.
             if (result != 0) {
                 check = abs(l) * abs(r);
                 // check that the abs is the same and use algebra to determine if an overflow as ocurred
@@ -171,7 +177,7 @@ string binaryEval(const string &left, char op, const string &right) {
             break;
         case '+':
             result = l + r;
-            // if adding like signs (because the signs will stay the same)
+            // if adding like signs (because the signs will stay the same).
             check = ((l >= 0 && r >= 0) || (l <= 0 && r <= 0)) ? abs(l) + abs(r) : abs(l + r);
             if (abs(result) != check) {
                 throw runtime_error("Integer over/underflow.");
@@ -180,6 +186,7 @@ string binaryEval(const string &left, char op, const string &right) {
         case '-':
             result = l - r;
             // if subtracting from a negative number, or adding (by subtracting a negative) to a positive number
+            // in otherwords if the sign of l is maintained after subtracting b, calculate abs seperately to avoid int limit.
             check = ((l <= 0 && r >= 0) || (l >= 0 && r <= 0)) ? abs(l) + abs(r) : abs(l - r);
             if (abs(result) != check) {
                 throw runtime_error("Integer over/underflow.");
@@ -189,6 +196,7 @@ string binaryEval(const string &left, char op, const string &right) {
             throw runtime_error("Invalid opeator in binaryOperation.");
     }
     string resultstr = to_string(result);
+    // this value is output when exponentation causes a overflow or underflow
     if (resultstr == "-9223372036854775808") {
         throw runtime_error("Integer over/underflow.");
     }
@@ -309,7 +317,7 @@ string parseAndEval(const string &str) {
                         delete[] ops;
                         ops = nullptr;
 
-                        //recurse
+                        // recurse
                         return parseAndEval(newexp);
                     }
                 }
@@ -349,6 +357,8 @@ string parseAndEval(const string &str) {
     return "Error";
 }
 
+// runs a test and outputs result based on some string inputs
+// msg: the name of the test to be printed, str: the expression to evaluate, expected: the expected value to compare against
 inline bool test(const string &msg, const string &str, long expected) {
     cout << msg << ": ";
     bool pass = expected == stol(parseAndEval(lexer(str)));
@@ -356,18 +366,23 @@ inline bool test(const string &msg, const string &str, long expected) {
     return pass;
 }
 
+// runs a test expected to produce an error based on some string inputs
+// msg: the name of the test to be printed, in: the expression to evaluate, errmsg: the expected error message to compare against
 inline bool errorTest(const string &msg, const string &in, const string &errmsg) {
     cout << msg << ": ";
     bool pass = false;
     try {
         parseAndEval(lexer(in));
+        // the test fails if there is no execption
     } catch (const exception &e) {
+        // the test only passes if the execption has the right message
         pass = e.what() == errmsg;
     }
     cout << ((pass) ? "Passed!" : "Failed!") << endl;
     return pass;
 }
 
+// runs all test cases, printing their individual results. Prints if all test cases pass or if at least one test case failed.
 void testCases() {
     bool allPass = true;
 
@@ -426,6 +441,7 @@ void testCases() {
 }
 
 int main() {
+    // ask for input until the user quits
     while (true) {
         // prompt and read input
         cout << "Provide an expression to simplify, enter 't' to run test cases, or 'q' to quit:" << endl;
@@ -434,7 +450,7 @@ int main() {
 
         // check for quit signal
         if (line == "q") {
-            return 0;
+            break; // quit loop, makes main quit naturally
         }
 
         // check for and start test cases
@@ -453,12 +469,15 @@ int main() {
             } else {
                 cout << result << endl;
             }
+        // catch and report intended errors
         } catch (const runtime_error &e) {
             cout << "Error: " << e.what() << endl;
+        // catch and report any potential unintended errors
         } catch (const exception &e) {
             cout << "Error: Unknown Error" << endl;
         }
         cout << endl;       
     }
+
     return 0;
 }
